@@ -1,0 +1,13 @@
+node_modules/
+
+# Vite build output
+dist/
+dist-ssr/
+
+# Vite cache
+.vite/
+
+# Secrets
+.env
+.env.local
+.env.*.local

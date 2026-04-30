@@ -1,0 +1,7 @@
+auth-service
+server
+vendor/
+.env
+.env.example
+*.md
+.git

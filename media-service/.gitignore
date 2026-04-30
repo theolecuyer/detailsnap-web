@@ -1,0 +1,8 @@
+# Maven build output
+target/
+
+# Maven wrapper jar (binary — not needed if developer has Maven installed)
+.mvn/wrapper/maven-wrapper.jar
+
+# Secrets
+.env

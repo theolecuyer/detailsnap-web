@@ -1,0 +1,9 @@
+# Compiled binary
+auth-service
+server
+
+# Build cache
+/vendor/
+
+# Secrets
+.env
