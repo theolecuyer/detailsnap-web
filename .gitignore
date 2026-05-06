@@ -8,7 +8,7 @@ Thumbs.db
 *.swp
 *.swo
 
-# Secrets — never commit real env files
+# Secrets
 .env
 .env.local
 .env.*.local
