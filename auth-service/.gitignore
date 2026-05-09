@@ -1,6 +1,6 @@
 # Compiled binary
 auth-service
-server
+/server
 
 # Build cache
 /vendor/
