@@ -1,0 +1,25 @@
+name: RC Release — Deploy to UAT
+
+# Triggered when a release candidate tag is pushed (e.g. v1.0.0-rc.1)
+on:
+    push:
+        tags:
+            - "v*.*.*-rc.*"
+
+jobs:
+    dispatch:
+        name: Dispatch UAT deploy
+        runs-on: ubuntu-latest
+        steps:
+            - name: Trigger infra UAT workflow
+              uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea
+              with:
+                  github-token: ${{ secrets.GH_TOKEN }}
+                  script: |
+                      await github.rest.repos.createDispatchEvent({
+                        owner: 'theolecuyer',
+                        repo: 'detailsnap-web-infra',
+                        event_type: 'uat-deploy',
+                        client_payload: { tag: '${{ github.ref_name }}' }
+                      });
+                      console.log('Dispatched UAT deploy for tag: ${{ github.ref_name }}');
