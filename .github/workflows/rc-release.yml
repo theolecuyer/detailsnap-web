@@ -1,23 +1,24 @@
-name: Trigger QA Build on PR Merge
+name: RC Release — Tag UAT
 
 on:
     push:
-        branches:
-            - main
+        tags:
+            - "v*.*.*-rc.*"
 
 jobs:
-    trigger:
-        name: Dispatch QA build
+    dispatch:
+        name: Dispatch UAT tag for ${{ github.ref_name }}
         runs-on: ubuntu-latest
         steps:
-            - name: Dispatch to infra repo
-              uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea
+            - name: Trigger infra UAT tag workflow
+              uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea # v7
               with:
                   github-token: ${{ secrets.GH_TOKEN }}
                   script: |
                       await github.rest.repos.createDispatchEvent({
                         owner: 'theolecuyer',
                         repo: 'detailsnap-web-infra',
-                        event_type: 'qa-build',
+                        event_type: 'uat-tag',
+                        client_payload: { tag: '${{ github.ref_name }}' }
                       });
-                      console.log('Dispatched QA build for commit: ${{ github.sha }}');
+                      console.log('Dispatched UAT tag for ${{ github.ref_name }}');

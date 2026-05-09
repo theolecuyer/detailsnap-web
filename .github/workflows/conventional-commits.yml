@@ -2,11 +2,12 @@ name: Conventional Commits Check
 
 on:
     pull_request:
-        types: [opened, synchronize, reopened]
+        types: [opened, synchronize, reopened, closed]
 
 jobs:
     check:
         name: Validate commit messages
+        if: github.event.action != 'closed'
         runs-on: ubuntu-latest
 
         steps:
@@ -28,3 +29,21 @@ jobs:
                       \"subject\": \"PR #${{ github.event.pull_request.number }} blocked — non-conventional commits\",
                       \"html\": \"<h3>PR <a href='${{ github.event.pull_request.html_url }}'>#${{ github.event.pull_request.number }}: ${{ github.event.pull_request.title }}</a> by ${{ github.event.pull_request.user.login }} was blocked.</h3><p>One or more commits do not follow <a href='https://www.conventionalcommits.org'>Conventional Commits</a> format.</p><p>Valid format: <code>type(scope): description</code><br>Valid types: feat, fix, docs, style, refactor, perf, test, chore, ci, build, revert</p>\"
                     }"
+
+    dispatch-qa-build:
+        name: Trigger QA build on merge
+        if: github.event.pull_request.merged == true
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: Dispatch QA build to infra repo
+              uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea # v7
+              with:
+                  github-token: ${{ secrets.GH_TOKEN }}
+                  script: |
+                      await github.rest.repos.createDispatchEvent({
+                        owner: 'theolecuyer',
+                        repo: 'detailsnap-web-infra',
+                        event_type: 'qa-build',
+                      });
+                      console.log('Dispatched QA build for merged PR #${{ github.event.pull_request.number }}');
