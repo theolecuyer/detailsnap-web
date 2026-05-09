@@ -1,17 +1,16 @@
-name: RC Release — Deploy to UAT
+name: Trigger QA Build on PR Merge
 
-# Triggered when a release candidate tag is pushed (e.g. v1.0.0-rc.1)
 on:
     push:
-        tags:
-            - "v*.*.*-rc.*"
+        branches:
+            - main
 
 jobs:
-    dispatch:
-        name: Dispatch UAT deploy
+    trigger:
+        name: Dispatch QA build
         runs-on: ubuntu-latest
         steps:
-            - name: Trigger infra UAT workflow
+            - name: Dispatch to infra repo
               uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea
               with:
                   github-token: ${{ secrets.GH_TOKEN }}
@@ -19,7 +18,6 @@ jobs:
                       await github.rest.repos.createDispatchEvent({
                         owner: 'theolecuyer',
                         repo: 'detailsnap-web-infra',
-                        event_type: 'uat-deploy',
-                        client_payload: { tag: '${{ github.ref_name }}' }
+                        event_type: 'qa-build',
                       });
-                      console.log('Dispatched UAT deploy for tag: ${{ github.ref_name }}');
+                      console.log('Dispatched QA build for commit: ${{ github.sha }}');
