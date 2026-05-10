@@ -1,11 +1,5 @@
 name: Semantic Release
 
-# Runs on every push to main (i.e. every PR merge).
-# Responsibilities:
-#   1. Determine next RC version via semantic-release (conventional commits → semver bump)
-#   2. Create the RC git tag in this repo (source of truth for version history)
-#   3. Dispatch qa-build to infra, passing the immutable SHA and RC tag
-#      so the infra side can build once and promote without ever touching `latest`
 on:
     push:
         branches:
@@ -26,7 +20,6 @@ jobs:
               with:
                   fetch-depth: 0
                   token: ${{ secrets.GH_TOKEN }}
-                  # Required so semantic-release can push the RC git tag
                   persist-credentials: false
 
             - name: Get short SHA
@@ -39,9 +32,6 @@ jobs:
               env:
                   GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
 
-            # Always dispatch qa-build so every merge gets tested in QA.
-            # rc_tag is only non-empty when semantic-release published a new RC
-            # (fix/feat commit) — infra uses it as the promotion target after tests.
             - name: Dispatch QA build to infra
               uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea # v7
               with:
